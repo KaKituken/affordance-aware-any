@@ -1,0 +1,71 @@
+encoder:
+  target: ldm.modules.encoders.modules.FrozenHFCLIPImageEmbedder
+    
+
+dataset:
+  target: ldm.data.data_fbp.FBPDatsets.FBPImageDataset
+  params:
+    fbp_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_img_src' # point to data
+    gt_path: '/n/holylfs05/LABS/pfister_lab/Lab/coxfs01/pfister_lab2/Lab/jixuan/dataset/image/SA1B'
+    num_folder: 1
+    transform:
+      foreground:
+        - Resize:
+            fix_size:
+            - 224
+            - 224
+        - RandomResize:
+            factor:
+            - 0.8
+            - 1.2
+            isotropic: true
+            prob: 0.4
+        - RandomRotation:
+            angle: 30
+            prob: 0.4
+        - RandomResize:
+            factor:
+            - 0.8
+            - 1.2
+            isotropic: false
+            prob: 0.2
+        - RandomCutout:
+            cut_factor:
+            - 0.1
+            - 0.5
+            prob: 0.2
+        - CropOrPad:
+            fix_size:
+            - 224
+            - 224
+        - Brightness:
+            brightness: 0.2
+            prob: 0.2
+        - Contrast:
+            contrast: 0.2
+            prob: 0.2
+        - Saturation:
+            saturation: 0.2
+            prob: 0.2
+        - GaussianBlur:
+            kernel_size: 3
+            prob: 0.1
+        - CLIPImage:
+            path: openai/clip-vit-large-patch14
+            return_tensors: pt
+            padding: False
+        - AddNoise:
+            noise: 0.1
+            prob: 0.1
+      background_with_groundtruth:
+        - ResizeWithAnn:
+            size: 256
+        - CropWithAnn:
+            size: 256
+        - CropToMultipleWithAnn:
+            factor: 8
+        - ToTensorWithAnn: {}
+        - RescaleWithAnn:
+            scale_range:
+            - -1
+            - 1

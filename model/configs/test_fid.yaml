@@ -1,0 +1,190 @@
+model:
+  base_learning_rate: 1.25e-4
+  target: ldm.models.diffusion.ddpm.LatentDiffusion
+  params:
+    # ckpt_path: /n/holyscratch01/pfister_lab/jixuan/logs/bs48/2023-09-07T11-00-23_putany/checkpoints/trainstep_checkpoints/epoch=000023-step=000010000.ckpt # point this to stable diffusion ckpt
+    # ckpt_path: /n/holyscratch01/pfister_lab/jixuan/logs/modify/2024-01-12T07-48-30_dual_input_branch_compress/checkpoints/epoch=000012.ckpt
+    ckpt_path: /n/holyscratch01/pfister_lab/jixuan/checkpoint/sd-v1-5-inpainting.ckpt
+    ignore_keys:
+      - "load_maximally"
+      - "cond_stage_model"
+      # - "model.diffusion_model.input_blocks.0.0.weight"
+    linear_start: 0.00085
+    linear_end: 0.0120
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    first_stage_key: groundtruth
+    cond_stage_key:
+      # left
+      concat:
+        # - key: masked_image
+        #   encoder: first
+        # - key: mask
+        #   encoder: re scale
+        - key: background
+          encoder: first
+        # sample from three different types of prompts (how to deal with null prompt?)
+        - key: mask
+          encoder: rescale
+        - key: org_mask
+          encoder: rescale
+        - key: bbox
+          encoder: coor2area
+        - key: point
+          encoder: heatmap
+        - key: blank
+          encoder: blank
+      # condition
+      crossattn:
+        - key: foreground
+          encoder: cond
+    conditioning_key: hybrid  # use both concat & crossattn
+    # conditioning_key: concat  # debug
+    sample_cond:
+      - key: point
+        p: 1
+      - key: bbox
+        p: 0
+      - key: mask
+        p: 0
+    image_size: 32
+    channels: 5   # !!! modify here to match Dual Diffusion. 5 learnable channels
+    cond_stage_trainable: false   # Note: different from the one we trained before
+    monitor: val/loss_simple_ema
+    loss_type: l2
+    scale_factor: 0.18215
+    use_ema: True         # stable diffusion inference sets it to False
+    dual_diffusion: True  # use dual diffusion process to predict position
+    change_order: True    # !!! always change order
+    
+    scheduler_config: # 10000 warmup steps
+      target: ldm.lr_scheduler.LambdaLinearScheduler
+      params:
+        warm_up_steps: [ 5000 ]
+        cycle_lengths: [ 10000000000000 ] # incredibly large number to prevent corner cases
+        f_start: [ 1.e-6 ]
+        f_max: [ 1. ]
+        f_min: [ 1. ]
+
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 32
+        in_channels: 8    # 8 channels, separately
+        pos_in_channels: 2
+        out_channels: 4   # z
+        pos_out_channels: 1
+        branch_block_num: 1
+        input_branch_block_num: 1
+        model_channels: 320
+        attention_resolutions: [ 4, 2, 1 ]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_heads: 8
+        use_spatial_transformer: True
+        transformer_depth: 1
+        raw_context_dim: 1024
+        context_dim: 768
+        use_checkpoint: False
+        legacy: False
+    
+    first_stage_config:
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        embed_dim: 4
+        monitor: val/rec_loss
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+
+    cond_stage_config:
+      target: ldm.modules.encoders.modules.FrozenHFDinoV2ImageEmbedder
+    
+    rescale_stage_config:
+      target: ldm.modules.encoders.modules.SpatialRescaler
+      params:
+        n_stages: 3 # 256 -> 32; 128 -> 16
+        method: 'bilinear'
+        augment: false
+
+    coor2area_stage_config:
+      target: ldm.modules.encoders.modules.Coor2Area
+      params:
+        target_size: [32, 32]
+        augment: false
+    
+    heatmap_stage_config:
+      target: ldm.modules.encoders.modules.GuassHeatmapper
+      params: 
+        target_size: [32, 32]
+        sigma: 2.6
+        augment: false
+    
+    blank_stage_config:
+      target: ldm.modules.encoders.modules.BlankGenerator
+      params:
+        target_size: [32, 32]
+        
+fid_test:
+  target: main.FIDCallback
+  params:
+    batch_size: 64
+    batch_freq: 5001
+    # batch_freq: 101
+    num_workers: 2
+    ddim_steps: 200
+    max_batch: 8
+    cfg_scales:
+      - 4.0
+    calc_fid_score: true
+    gt_dir: '/n/holyscratch01/pfister_lab/jixuan/fid/fid_branch_compress_full_video/'
+    pd_dir: '/n/holyscratch01/pfister_lab/jixuan/fid/fid_branch_compress_full_video/'
+    dataset_cfg:
+      target: ldm.data.fbp.ImageVideoWrapper
+      params:
+        image_cfg:
+          fbp_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_img_testset' # point to data
+          gt_path: '/n/holylfs05/LABS/pfister_lab/Lab/coxfs01/pfister_lab2/Lab/jixuan/dataset/image/SA1B'
+          num_folder: 2
+          mode: 'val'
+          transform:
+            foreground:
+              - Resize:
+                  fix_size:
+                  - 224
+                  - 224
+              - DinoImage:
+                  path: facebook/dinov2-large
+                  return_tensors: pt
+                  padding: False
+            background_with_groundtruth:
+              - ResizeWithAnn:
+                  size: 256
+              - CropWithAnn:
+                  size: 256
+              - CropToMultipleWithAnn:
+                  factor: 8
+              - ToTensorWithAnn: {}
+              - RescaleWithAnn:
+                  scale_range:
+                  - -1
+                  - 1
+        video_cfg:
+          fbp_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_video_src' # point to data
+          gt_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_video_src'
+        ratio: 1

@@ -1,0 +1,191 @@
+model:
+  base_learning_rate: 7.5e-05
+  target: ldm.models.diffusion.ddpm_pt_only.LatentDiffusion
+  params:
+    ignore_keys:
+    - load_maximally
+    - cond_stage_model
+    linear_start: 0.00085
+    linear_end: 0.012
+    num_timesteps_cond: 1
+    log_every_t: 200
+    timesteps: 1000
+    first_stage_key: groundtruth
+    cond_stage_key:
+      concat:
+      - key: background
+        encoder: first
+      - key: point
+        encoder: heatmap
+      crossattn:
+      - key: foreground
+        encoder: cond
+    conditioning_key: hybrid
+    sample_cond:
+    - key: point
+      p: 1
+    - key: bbox
+      p: 0
+    - key: mask
+      p: 0
+    image_size: 32
+    channels: 4
+    cond_stage_trainable: false
+    monitor: val/loss_simple_ema
+    scale_factor: 0.18215
+    use_ema: true
+    scheduler_config:
+      target: ldm.lr_scheduler.LambdaLinearScheduler
+      params:
+        warm_up_steps:
+        - 500
+        cycle_lengths:
+        - 10000000000000
+        f_start:
+        - 1.0e-06
+        f_max:
+        - 1.0
+        f_min:
+        - 1.0
+    unet_config:
+      target: ldm.modules.diffusionmodules.openaimodel.UNetModel
+      params:
+        image_size: 32
+        in_channels: 9
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions:
+        - 4
+        - 2
+        - 1
+        num_res_blocks: 2
+        channel_mult:
+        - 1
+        - 2
+        - 4
+        - 4
+        num_heads: 8
+        use_spatial_transformer: true
+        transformer_depth: 1
+        raw_context_dim: 1024
+        context_dim: 768
+        use_checkpoint: false
+        legacy: false
+    first_stage_config:
+      target: ldm.models.autoencoder.AutoencoderKL
+      params:
+        embed_dim: 4
+        monitor: val/rec_loss
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        lossconfig:
+          target: torch.nn.Identity
+    cond_stage_config:
+      target: ldm.modules.encoders.modules.FrozenHFCLIPImageEmbedder
+    rescale_stage_config:
+      target: ldm.modules.encoders.modules.SpatialRescaler
+      params:
+        n_stages: 3
+        method: nearest-exact
+    heatmap_stage_config:
+      target: ldm.modules.encoders.modules.GuassHeatmapper
+      params:
+        target_size:
+        - 32
+        - 32
+        sigma: 3
+data:
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 8
+    num_workers: 2
+    wrap: false
+    train:
+      target: ldm.data.fbp.ImageVideoWrapper
+      params:
+        image_cfg:
+          fg_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_sa1b_5k1/foreground' # point to data
+          bg_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_sa1b_5k1/background'
+          gt_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/SA1B_5k1'
+          mask_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_sa1b_5k1/mask'
+          ann_path: '/n/holyscratch01/pfister_lab/jixuan/dataset/FBP_sa1b_5k1/prompt/prompt.json'
+          transform:
+            foreground:
+              - Resize:
+                  fix_size:
+                  - 224
+                  - 224
+              - CLIPImage:
+                  path: openai/clip-vit-large-patch14
+                  return_tensors: pt
+                  padding: False
+            background_with_groundtruth:
+              - ResizeWithAnn:
+                  size: 256
+              - CropWithAnn:
+                  size: 256
+              - CropToMultipleWithAnn:
+                  factor: 8
+              - ToTensorWithAnn: {}
+              - RescaleWithAnn:
+                  scale_range:
+                  - -1
+                  - 1
+        video_cfg:
+          bg_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/background'
+          fg_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/foreground'
+          gt_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/groundtruth'
+          mask_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/mask'
+          ann_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/prompt/prompt.json'
+        ratio: 1
+    validation:
+      target: ldm.data.fbp.ImageVideoWrapper
+      params:
+        image_cfg:
+          fg_path: '/n/home11/jxhe/insert-any/dataset-builder/img_data/FBP_sa1b_filter/foreground' # point to data
+          bg_path: '/n/home11/jxhe/insert-any/dataset-builder/img_data/FBP_sa1b_filter/background'
+          gt_path: '/n/home11/jxhe/insert-any/dataset-builder/img_data/SA1B_mini'
+          mask_path: '/n/home11/jxhe/insert-any/dataset-builder/img_data/FBP_sa1b_filter/mask'
+          ann_path: '/n/home11/jxhe/insert-any/dataset-builder/img_data/FBP_sa1b_filter/prompt/prompt.json'
+          transform:
+            foreground:
+              - Resize:
+                  fix_size:
+                  - 224
+                  - 224
+              - CLIPImage:
+                  path: openai/clip-vit-large-patch14
+                  return_tensors: pt
+                  padding: False
+            background_with_groundtruth:
+              - ResizeWithAnn:
+                  size: 256
+              - CropWithAnn:
+                  size: 256
+              - CropToMultipleWithAnn:
+                  factor: 8
+              - ToTensorWithAnn: {}
+              - RescaleWithAnn:
+                  scale_range:
+                  - -1
+                  - 1
+        video_cfg:
+          bg_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/background'
+          fg_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/foreground'
+          gt_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/groundtruth'
+          mask_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/mask'
+          ann_path: '/n/home11/jxhe/insert-any/dataset-builder/video_data/FBP_video/prompt/prompt.json'
+        ratio: 1
