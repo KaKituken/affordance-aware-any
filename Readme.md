@@ -1,12 +1,12 @@
 # Affordance-Aware Object Insertion via Mask-Aware Dual Diffusion
 
-[![License](https://badgen.net/badge/License/BSD%203-Clause%20License?color=blue&cache=300)](https://github.com/yeliudev/R2-Tuning/blob/main/LICENSE)
+[![License](https://badgen.net/badge/License/BSD%203-Clause%20License?color=blue&cache=300)](https://github.com/KaKituken/affordance-aware-any/blob/main/LICENSE) [![Project Page](https://badgen.net/badge/Project%20Page/Visit/green?icon=github)](https://kakituken.github.io/affordance-any.github.io/) 
 
 [**Installation**](#-installation) | [**Dataset**](#-dataset) | [**Demo**](#-demo) | [**Training & Evaluation**](#-training&evaluation)
 
 This repository maintains the official implementation of the paper **Affordance-Aware Object Insertion via Mask-Aware Dual Diffusion** by [Jixuan He](https://kakituken.github.io/home), [Wanhua Li](https://li-wanhua.github.io/),  [Ye Liu](https://yeliu.dev/), [Junsik Kim](https://sites.google.com/site/jskimcv/), [Donglai Wei](https://donglaiw.github.io/) and [Hanspeter Pfister](https://vcg.seas.harvard.edu/people/).
 
-![](./imgs/teaser.png)
+![](./imgs/teaser_new.png)
 
 ## 🔨 Installation
 
@@ -80,8 +80,8 @@ python vdata_process.py \
 
 We provide two checkpoints for both 256x256 and 512x512 resolution. Download them here
 
-- 256 x 256: 
-- 512 x 512: 
+- 256 x 256: [Hugging Face](https://huggingface.co/Kakituken/affordance-insertion-any/resolve/main/affordance_256.ckpt?download=true)
+- 512 x 512: [Hugging Face](https://huggingface.co/Kakituken/affordance-insertion-any/tree/main/affordance_512.ckpt)
 
 Put them at `./ckpt/affordance_256.ckpt` or  `./ckpt/affordance_512.ckpt`.
 
