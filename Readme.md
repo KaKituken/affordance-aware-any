@@ -6,8 +6,6 @@
 
 This repository maintains the official implementation of the paper **Affordance-Aware Object Insertion via Mask-Aware Dual Diffusion** by [Jixuan He](https://kakituken.github.io/home), [Wanhua Li](https://li-wanhua.github.io/),  [Ye Liu](https://yeliu.dev/), [Junsik Kim](https://sites.google.com/site/jskimcv/), [Donglai Wei](https://donglaiw.github.io/) and [Hanspeter Pfister](https://vcg.seas.harvard.edu/people/).
 
-<img src="./imgs/video_demo.gif" style="zoom:150%;" />
-
 ![](./imgs/teaser_new.png)
 
 [[Project Page]](https://kakituken.github.io/affordance-any.github.io/)
@@ -81,6 +79,8 @@ python vdata_process.py \
 
 
 ## 📌 Checkpoint
+
+<img src="./imgs/video_demo.gif" style="zoom:150%;" />
 
 We provide two checkpoints for both 256x256 and 512x512 resolution. Download them here
 
