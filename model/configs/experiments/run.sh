@@ -1,6 +1,0 @@
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/experiments/dual.yaml -t --gpus 2 --name dual --logdir /n/holyscratch01/pfister_lab/jixuan/logs/full
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/experiments/baseline_dataset.yaml -t --gpus 2 --name baseline_dataset --logdir /n/holyscratch01/pfister_lab/jixuan/logs/full
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/experiments/dual_mask.yaml -t --gpus 2 --name dual_mask --logdir /n/holyscratch01/pfister_lab/jixuan/logs/full
-CUDA_VISIBLE_DEVICES=0,1, torchrun --master_port 25641 --nproc_per_node 2 main.py --base configs/experiments/dual_safe.yaml -t --gpus 2 --name dual_safe --logdir /n/holyscratch01/pfister_lab/jixuan/logs/full
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/experiments/dual_order.yaml -t --gpus 2 --name dual_order --logdir /n/holyscratch01/pfister_lab/jixuan/logs/full
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/experiments/dual_sep_5e-4_rand_5k.yaml -t --gpus 2 --name dual_sep_5e-4_rand_5k --logdir /n/holyscratch01/pfister_lab/jixuan/logs/full

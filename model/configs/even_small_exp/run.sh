@@ -1,7 +1,0 @@
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/even_small_exp/dual_small.yaml -t --gpus 2 --name dual_small --logdir /n/holyscratch01/pfister_lab/jixuan/logs/small
-CUDA_VISIBLE_DEVICES=0, torchrun --nproc_per_node 1 main.py --base configs/even_small_exp/dual_small_copy.yaml -t --gpus 1 --name dual_small --logdir /n/holyscratch01/pfister_lab/jixuan/logs/test
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/even_small_exp/dual_small_2.5e-4.yaml -t --gpus 2 --name dual_small_2.5e-4 --logdir /n/holyscratch01/pfister_lab/jixuan/logs/small
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/even_small_exp/dual_small_5.0e-4.yaml -t --gpus 2 --name dual_small_5.0e-4 --logdir /n/holyscratch01/pfister_lab/jixuan/logs/small
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/even_small_exp/dual_small_2.5e-4_ave.yaml -t --gpus 2 --name dual_small_2.5e-4_ave --logdir /n/holyscratch01/pfister_lab/jixuan/logs/small
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/even_small_exp/dual_small_separate.yaml -t --gpus 2 --name dual_small_sep --logdir /n/holyscratch01/pfister_lab/jixuan/logs/small
-CUDA_VISIBLE_DEVICES=0,1, torchrun --nproc_per_node 2 main.py --base configs/even_small_exp/dual_small_10k.yaml -t --gpus 2 --name dual_small_10k --logdir /n/holyscratch01/pfister_lab/jixuan/logs/small
