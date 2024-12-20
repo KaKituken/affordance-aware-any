@@ -1,6 +1,6 @@
 # Affordance-Aware Object Insertion via Mask-Aware Dual Diffusion
 
-[![License](https://badgen.net/badge/License/BSD%203-Clause%20License?color=blue&cache=300)](https://github.com/KaKituken/affordance-aware-any/blob/main/LICENSE) [![Project Page](https://badgen.net/badge/Project%20Page/Visit/green?icon=github)](https://kakituken.github.io/affordance-any.github.io/) 
+[![arXiv](https://badgen.net/badge/arXiv/2412.14462/red?cache=300)](https://arxiv.org/abs/2412.14462)[![License](https://badgen.net/badge/License/BSD%203-Clause%20License?color=blue&cache=300)](https://github.com/KaKituken/affordance-aware-any/blob/main/LICENSE) [![Project Page](https://badgen.net/badge/Project%20Page/Visit/green?icon=github)](https://kakituken.github.io/affordance-any.github.io/) 
 
 [**Installation**](#-installation) | [**Dataset**](#-dataset) | [**Checkpoint**](#-checkpoint) |[**Demo**](#-demo) | [**Training & Evaluation**](#-training & evaluation)
 
@@ -8,7 +8,7 @@ This repository maintains the official implementation of the paper **Affordance-
 
 ![](./imgs/teaser_new.png)
 
-[[Project Page]](https://kakituken.github.io/affordance-any.github.io/)
+[[arXiv]](https://arxiv.org/abs/2412.14462)[[Project Page]](https://kakituken.github.io/affordance-any.github.io/)
 
 ## 🔨 Installation
 
