@@ -2,7 +2,7 @@
 
 [![License](https://badgen.net/badge/License/BSD%203-Clause%20License?color=blue&cache=300)](https://github.com/KaKituken/affordance-aware-any/blob/main/LICENSE) [![Project Page](https://badgen.net/badge/Project%20Page/Visit/green?icon=github)](https://kakituken.github.io/affordance-any.github.io/) 
 
-[**Installation**](#-installation) | [**Dataset**](#-dataset) | [**Checkpoint**](#-checkpoint) |[**Demo**](#-demo) | [**Training & Evaluation**](#-training & evaluation)
+[**Installation**](#-installation) | [**Dataset**](#-dataset) | [**Checkpoint**](#-checkpoint) |[**Demo**](#-demo) | [**Training & Evaluation**](#-training-&-evaluation)
 
 This repository maintains the official implementation of the paper **Affordance-Aware Object Insertion via Mask-Aware Dual Diffusion** by [Jixuan He](https://kakituken.github.io/home), [Wanhua Li](https://li-wanhua.github.io/),  [Ye Liu](https://yeliu.dev/), [Junsik Kim](https://sites.google.com/site/jskimcv/), [Donglai Wei](https://donglaiw.github.io/) and [Hanspeter Pfister](https://vcg.seas.harvard.edu/people/).
 
