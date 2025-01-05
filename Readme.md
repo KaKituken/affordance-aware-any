@@ -27,7 +27,7 @@ conda env create -f environment.yaml
 
 We build the SAM-FB dataset on top of original [SA-1B](https://ai.meta.com/datasets/segment-anything/) dataset.
 
-Due to the storage limitation, you can download the first 10 sub-folder of SAM-FB dataset [here](). 
+Due to the storage limitation, you can download the first 10 sub-folder of SAM-FB dataset [here](https://huggingface.co/datasets/Kakituken/SAM-FB/tree/main). 
 
 To build the rest of the dataset, please download the [SA-1B](https://ai.meta.com/datasets/segment-anything/) dataset and follow the instructions in the next section.
 
