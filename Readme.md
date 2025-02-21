@@ -54,7 +54,7 @@ python mask_nms.py \
 #### 3. Inpainting
 After getting the masks, run following to inpaint the background and construct pair data. The filter will also perform here.
 
-Download the checkpoint [here]() for foreground filtering.
+Download the checkpoint [here](https://huggingface.co/Kakituken/affordance-insertion-any/blob/main/epoch_2000.pth) for foreground filtering.
 
 ```sh
 python inpainting_sa1b.py \
